@@ -3,8 +3,12 @@ from flask import Flask, request, jsonify, make_response, render_template, sessi
 import jwt
 from datetime import datetime, timedelta
 
+# app = Flask(__name__)
+# app.config['SECRET_kEY'] = 'b'SO\x07\xfd\x7fDh\xc4`\x16\xa6\xbd\xd7T\xe1&'
 app = Flask(__name__)
-app.config['SECRET_kEY'] = 'af0caf1cfd904b52abd29c893500a19b'
+app.secret_key = b'Z\x864\x94\x8a\xf2\x92\x1c\xb1&\xda\xff\x84\xdfc\x8c'
+#generation by command in terminal:> python -c 'import os; print(os.urandom(16))'
+
 
 def token_required(func):
     @wraps(func)
@@ -43,7 +47,7 @@ def auth():
     return 'JWT is verified. Welcome to you dashboard!' 
 
 # Login
-@app.route('/Login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     if request.form['username'] and request.form['password'] == '123456':
         session['logged_in'] = True
