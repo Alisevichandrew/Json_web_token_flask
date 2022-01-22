@@ -1,15 +1,62 @@
-#import necessary library
-from flask import Flask, request
-from flask_restful import Resource, Api, reqparse
-from security import authenticate, identity
-from flask_jwt import JWT, jwt_required, current_identity
+from functools import wraps
+from flask import Flask, request, jsonify, make_response, render_template, session
+import jwt
+from datetime import datetime, timedelta
 
-#configuring your application
 app = Flask(__name__)
-app.secret_key = b'\xab\xf7P~\x008 L\x91ln\xc4\x91\x98J\xa2'
+app.config['SECRET_kEY'] = 'af0caf1cfd904b52abd29c893500a19b'
 
-#Creating our Api
-api = Api(app)
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if not token:
+            return jsonify({'Alert!': 'Token is missing!'}), 401
+        
+        try:
+            # why 'data'?
+            token = jwt.decode(token, app.config['SECRET KEY'])
+        except:
+            return jsonify({'Message': 'Invalid Token'}), 403
+        
+        return func(*args, **kwargs)
+    return decorated
+    
 
-jwt = JWT(app, authenticate, identity)
+#Home
+@app.route('/')
+def home():
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return 'Logged in currently!'
 
+#Public
+@app.route('/public')
+def public():
+    return 'For Public'
+
+#Authenticated
+@app.route('/auth')
+@token_required
+def auth():
+    return 'JWT is verified. Welcome to you dashboard!' 
+
+# Login
+@app.route('/Login', methods=['POST'])
+def login():
+    if request.form['username'] and request.form['password'] == '123456':
+        session['logged_in'] = True
+        token = jwt.encode({
+            'user': request.form['username'],
+            'expiration': str(datetime.utcnow() + timedelta(seconds=60))
+        },
+            app.config['SECRET_KEY'])
+        return jsonify({'token': token.decode('utf-8')})
+
+    else:
+        return make_response('Unable to verify', 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed!"'})
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
