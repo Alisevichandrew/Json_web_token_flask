@@ -7,7 +7,7 @@ from functools import wraps
 app = Flask(__name__)
 
 
-app.config['SECRET_KEY'] = b'h\xd9=n\xab\xa4i\x81)?\xd2\x1ev\x10\xf9\x10'
+app.config['SECRET_KEY'] = b'\xc6\xdb\x01\xb7\xc1\xd4\x86\x87\xdb;\xb68\xf3+z\x86'
 
 def token_required(func):
     # decorator factory which invoks update_wrapper() method and passes decorated function as an argument
