@@ -1,0 +1,31 @@
+If the terminal gives an error:
+RuntimeError: The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+then it is necessary to generate the key in the following code:
+
+app = Flask(__name__)
+app.secret_key = ''
+_____example____1_______
+to do this, you should write in the terminal: 
+
+python -c 'import os; print(os.urandom(16))'
+
+then it will generate a code, for example:
+
+b'Z\x864\x94\x8a\xf2\x92\x1c\xb1&\xda\xff\x84\xdfc\x8c'
+
+
+
+For chesking your token:
+1. Copy your token from browser (after the running file 'app.py' with new ['SECRET_KEY'])
+2. Visit https://jwt.io/ for checking your token     
+3. Paste your token from browser into field "Encoded" (at the https://jwt.io/ )
+4. Into the field "Decoded" your can see "PAYLOAD:DATA" from the table below
+5. Ok. And for finishing the process, your should to copy the secret key from your running file "app.py"
+   and paste it into the field (on the https://jwt.io/ ) "VERIFY SIGNATURE" 
+6. Your will see "Signature Verified" 
+7. Unfortunately, file 'app.py' hasn't generated 'refresh token', for that reason, for generate and checking the new token,
+   your should to wrire in terminal pywershell:      python -c 'import os; print(os.urandom(16))'      , then copy the secret key
+   and paste into the line:  app.config['SECRET_KEY'] =   from the file app.py.
+8. And repeat the actions from paragraph from point '1' to point '6'.
+9. Ok, job well done !
+    
